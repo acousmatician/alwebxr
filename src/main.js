@@ -6,6 +6,9 @@ import { VRButton } from "three/examples/jsm/webxr/VRButton.js";
 let camera, scene, renderer;
 let listener, sound, audioLoader;
 let audioReady = false;
+let autoExitTimer = null;
+const AUTO_EXIT_SECONDS = 15; // change to taste
+
 
 // --- OSC bridge (browser -> ws://127.0.0.1:8081 -> UDP OSC) ---
 let oscWS;
@@ -41,6 +44,36 @@ renderer.setPixelRatio(window.devicePixelRatio);
 
 renderer.xr.enabled = true; // <-- required
 document.body.appendChild(renderer.domElement);
+
+document.getElementById("exitvr").onclick = async () => {
+  if (renderer.xr.isPresenting) {
+    const session = renderer.xr.getSession();
+    if (session) {
+      await session.end();
+    }
+  }
+};
+
+renderer.xr.addEventListener("sessionstart", async () => {
+  console.log("VR session started — auto-exit armed");
+  if (autoExitTimer) clearTimeout(autoExitTimer);
+
+  autoExitTimer = setTimeout(async () => {
+    const s = renderer.xr.getSession();
+    if (s) {
+      console.warn("Auto-exiting VR (failsafe).");
+      await s.end();
+    }
+  }, AUTO_EXIT_SECONDS * 1000);
+});
+
+renderer.xr.addEventListener("sessionend", () => {
+  console.log("VR session ended — auto-exit cleared");
+  if (autoExitTimer) clearTimeout(autoExitTimer);
+  autoExitTimer = null;
+});
+
+
 
 // Adds the "Enter VR" button (bottom of the page)
 document.body.appendChild(VRButton.createButton(renderer));

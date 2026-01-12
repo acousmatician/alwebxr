@@ -6,14 +6,19 @@
     <title>AL WebXR Lab</title>
     <style>
       html, body { margin: 0; height: 100%; overflow: hidden; }
+
       #ui {
         position: fixed;
         top: 12px;
         left: 12px;
-        z-index: 10;
+        z-index: 9999;
         display: flex;
         gap: 8px;
+        background: rgba(0,0,0,0.4);
+        padding: 8px;
+        border-radius: 6px;
       }
+
       button { padding: 10px 12px; font-size: 14px; }
     </style>
   </head>
@@ -21,7 +26,10 @@
     <div id="ui">
       <button id="play">Play sound</button>
       <button id="stop" disabled>Stop</button>
+      <button id="exitvr">Exit VR</button>
     </div>
-    <script type="module" src="/src/main.js"></script>
+
+    <!-- relative path plays nicer with Vite base -->
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>
