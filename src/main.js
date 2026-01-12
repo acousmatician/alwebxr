@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { VRButton } from "three/examples/jsm/webxr/VRButton.js";
+
 
 let camera, scene, renderer;
 let listener, sound, audioLoader;
@@ -33,10 +35,15 @@ function init() {
   );
   camera.position.set(0, 1.6, 3);
 
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  document.body.appendChild(renderer.domElement);
+renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+
+renderer.xr.enabled = true; // <-- required
+document.body.appendChild(renderer.domElement);
+
+// Adds the "Enter VR" button (bottom of the page)
+document.body.appendChild(VRButton.createButton(renderer));
 
   scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
 
